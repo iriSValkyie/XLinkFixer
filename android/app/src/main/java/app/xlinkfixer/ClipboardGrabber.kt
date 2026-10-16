@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.Gravity
 import android.view.View
@@ -25,6 +26,19 @@ object ClipboardGrabber {
     private var busy = false
 
     val isBusy: Boolean get() = busy
+
+    /**
+     * 自分がクリップボードを読んだ／書いた直後は、それに起因するイベント
+     * （Android 12+ の「〜がクリップボードから貼り付けました」トースト、
+     * Android 13+ の書き込み後プレビュー表示）が飛んでくる。
+     * それを拾ってまた読みに行くと永久ループになるので、しばらくイベントを無視する。
+     */
+    private const val SUPPRESS_MS = 1500L
+
+    @Volatile
+    private var suppressUntil = 0L
+
+    val isSuppressed: Boolean get() = SystemClock.elapsedRealtime() < suppressUntil
 
     fun grabAndRewrite(ctx: Context) {
         if (busy) return
@@ -66,6 +80,7 @@ object ClipboardGrabber {
             if (finished) return
             finished = true
             try { wm.removeViewImmediate(view) } catch (_: Exception) {}
+            suppressUntil = SystemClock.elapsedRealtime() + SUPPRESS_MS
             busy = false
         }
 

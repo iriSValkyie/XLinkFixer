@@ -14,6 +14,7 @@ object Prefs {
     private const val KEY_TARGET = "target"
     private const val KEY_LOG = "log"
     private const val LOG_LINES = 40
+    private const val LOG_LINE_MAX = 200
 
     private fun sp(ctx: Context): SharedPreferences =
         ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE)
@@ -38,7 +39,8 @@ object Prefs {
         val lines = (sp(ctx).getString(KEY_LOG, "") ?: "")
             .split('\n').filter { it.isNotBlank() }
             .toMutableList()
-        lines.add(0, "$time  $line")
+        val clipped = if (line.length > LOG_LINE_MAX) line.substring(0, LOG_LINE_MAX) + "…" else line
+        lines.add(0, "$time  $clipped")
         while (lines.size > LOG_LINES) lines.removeAt(lines.size - 1)
         sp(ctx).edit().putString(KEY_LOG, lines.joinToString("\n")).apply()
     }

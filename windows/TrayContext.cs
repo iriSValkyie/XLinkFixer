@@ -17,6 +17,8 @@ public sealed class TrayContext : ApplicationContext
     private readonly List<ToolStripMenuItem> _targetItems = new();
 
     private string? _lastSet;
+    private DateTime _lastRewrite = DateTime.MinValue;
+    private int _burst;
 
     public TrayContext()
     {
@@ -78,6 +80,12 @@ public sealed class TrayContext : ApplicationContext
 
     private void OnClipboardUpdated()
     {
+        try { HandleClipboardUpdate(); }
+        catch (Exception) { /* 常駐を守る */ }
+    }
+
+    private void HandleClipboardUpdate()
+    {
         if (!_settings.Enabled) return;
 
         var text = TryGetText();
@@ -86,6 +94,13 @@ public sealed class TrayContext : ApplicationContext
 
         var rewritten = Rewriter.Rewrite(text, _settings.Target);
         if (rewritten == null) return;
+
+        // 別のクリップボード常駐ツールが逆方向に書き換えていると無限ループになるので、
+        // 短時間に連続して書き換えが起きたら一旦手を引く。
+        var now = DateTime.UtcNow;
+        _burst = (now - _lastRewrite).TotalSeconds < 2 ? _burst + 1 : 0;
+        _lastRewrite = now;
+        if (_burst >= 5) return;
 
         _lastSet = rewritten;
         if (!TrySetText(rewritten)) return;
@@ -96,7 +111,9 @@ public sealed class TrayContext : ApplicationContext
         }
     }
 
-    // コピー直後は元アプリがクリップボードを掴んでいることがあるので少しリトライする
+    // コピー直後は元アプリがクリップボードを掴んでいることがあるので少しリトライする。
+    // クリップボードの中身は他人のデータなので、ExternalException 以外（OutOfMemory 等）も
+    // 全部握りつぶす。WndProc 内で例外が漏れると常駐アプリごと落ちる。
     private static string? TryGetText()
     {
         for (int i = 0; i < 6; i++)
@@ -109,6 +126,10 @@ public sealed class TrayContext : ApplicationContext
             {
                 Thread.Sleep(40);
             }
+            catch (Exception)
+            {
+                return null;
+            }
         }
         return null;
     }
@@ -120,7 +141,7 @@ public sealed class TrayContext : ApplicationContext
             Clipboard.SetDataObject(text, true, 8, 60);
             return true;
         }
-        catch (ExternalException)
+        catch (Exception)
         {
             return false;
         }
@@ -151,6 +172,9 @@ public sealed class TrayContext : ApplicationContext
         catch { }
     }
 
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool DestroyIcon(IntPtr hIcon);
+
     // 外部アイコンファイル無しで済ませるため、簡単なアイコンを描画で作る
     private static Icon CreateIcon()
     {
@@ -166,7 +190,17 @@ public sealed class TrayContext : ApplicationContext
             var size = g.MeasureString("fx", font);
             g.DrawString("fx", font, Brushes.White, (32 - size.Width) / 2, (32 - size.Height) / 2);
         }
-        return Icon.FromHandle(bmp.GetHicon());
+        // GetHicon のハンドルは Icon.FromHandle では所有されないので、複製してから破棄する
+        var hIcon = bmp.GetHicon();
+        try
+        {
+            using var tmp = Icon.FromHandle(hIcon);
+            return (Icon)tmp.Clone();
+        }
+        finally
+        {
+            DestroyIcon(hIcon);
+        }
     }
 
     protected override void ExitThreadCore()

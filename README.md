@@ -131,11 +131,20 @@ Android 10 以降、バックグラウンドのアプリはクリップボード
 ```
 .github/workflows/build.yml   タグ push で Windows / Android を並列ビルド → Release
 windows/                      C# (.NET 8, WinForms) トレイ常駐アプリ
-android/                      Kotlin アプリ（Gradle wrapper は同梱していません。CI は setup-gradle、
-                              手元では Android Studio で開けば自動で用意されます）
+windows.tests/                その xunit テスト
+android/                      Kotlin アプリ（Gradle wrapper 同梱）
+tests/rewrite_cases.tsv       URL 書き換えの共有テストケース。両言語のテストがこのファイルを読む
 ```
 
 URL の書き換え正規表現は `windows/Rewriter.cs` と `android/.../Rewriter.kt` で同じものを使っています。
-直すときは両方を揃えてください。
+直すときは両方を揃え、`tests/rewrite_cases.tsv` にケースを足してください。CI はビルド前に両方のテストを回します。
 
+```bash
+# 手元で回す場合
+dotnet test windows.tests
+cd android && ./gradlew testReleaseUnitTest
+```
+
+正規表現の注意: `\s` `\d` `\w` は .NET（Unicode）と Java/Kotlin（ASCII）で意味が違うので使わず、
+文字クラスは `[0-9]` のように明示しています。
 

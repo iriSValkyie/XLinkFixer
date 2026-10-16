@@ -1,6 +1,8 @@
 # .NET
 windows/bin/
+windows.tests/bin/
 windows/obj/
+windows.tests/obj/
 out/
 
 # Android / Gradle

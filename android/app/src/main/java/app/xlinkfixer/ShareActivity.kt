@@ -15,8 +15,11 @@ class ShareActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // この Activity は exported なので、どのアプリからでも任意の文字列を投げ込める。
+        // 渡された文字列をそのままクリップボードに書くと「クリップボード汚染」の入口になるため、
+        // ツイート URL として解釈できた部分だけを書き戻す（それ以外の文字列は捨てる）。
         val text = if (intent?.action == Intent.ACTION_SEND) intent.getStringExtra(Intent.EXTRA_TEXT) else null
-        val out = Rewriter.rewrite(text, Prefs.target(this))
+        val out = Rewriter.extractRewritten(text, Prefs.target(this))
 
         if (out == null) {
             Toast.makeText(this, R.string.toast_nothing, Toast.LENGTH_SHORT).show()

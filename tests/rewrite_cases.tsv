@@ -1,0 +1,25 @@
+# 入力<TAB>期待出力（置き換え先は fixupx.com 固定）。入力と期待出力が同じ行は「書き換えてはいけない」ケース。
+https://x.com/jack/status/20?s=20&t=abc	https://fixupx.com/jack/status/20
+https://twitter.com/jack/status/20	https://fixupx.com/jack/status/20
+https://www.x.com/jack/status/20/photo/1#top	https://fixupx.com/jack/status/20/photo/1
+https://x.com/i/status/20	https://fixupx.com/i/status/20
+https://x.com/i/web/status/20	https://fixupx.com/i/web/status/20
+http://mobile.twitter.com/a/status/1	https://fixupx.com/a/status/1
+見て https://x.com/a/status/1 と https://twitter.com/b/status/2 どっちも	見て https://fixupx.com/a/status/1 と https://fixupx.com/b/status/2 どっちも
+見た https://x.com/a/status/1?s=20を貼ってね	見た https://fixupx.com/a/status/1を貼ってね
+「https://x.com/a/status/1?s=20」と書かれた	「https://fixupx.com/a/status/1」と書かれた
+(https://x.com/a/status/1?s=20)	(https://fixupx.com/a/status/1)
+[tweet](https://x.com/a/status/1?s=20)	[tweet](https://fixupx.com/a/status/1)
+https://x.com/a/status/1?s=20　全角スペースの後	https://fixupx.com/a/status/1　全角スペースの後
+https://x.com/a/status/1?s=20続き	https://fixupx.com/a/status/1続き
+https://x.com:443/a/status/1	https://fixupx.com/a/status/1
+https://x.com./a/status/1	https://fixupx.com/a/status/1
+https://x.com/jack	https://x.com/jack
+https://x.com/jack/status/	https://x.com/jack/status/
+https://fixupx.com/jack/status/20	https://fixupx.com/jack/status/20
+https://notx.com/jack/status/20	https://notx.com/jack/status/20
+https://evil-x.com/jack/status/20	https://evil-x.com/jack/status/20
+https://x.com.evil.com/jack/status/20	https://x.com.evil.com/jack/status/20
+https://twitter.com@evil.com/jack/status/20	https://twitter.com@evil.com/jack/status/20
+https://evil.com/x.com/jack/status/20	https://evil.com/x.com/jack/status/20
+fixupxに変換してね	fixupxに変換してね
