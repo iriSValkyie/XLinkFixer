@@ -56,7 +56,10 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
           echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
-
+          
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+        
       - name: Test
         working-directory: android
         run: ./gradlew testReleaseUnitTest --no-daemon
