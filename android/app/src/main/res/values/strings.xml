@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XLinkFixer</string>
+    <string name="share_label">XLinkFixer でリンクを書き換えてコピー</string>
+    <string name="accessibility_description">クリップボードに X / Twitter のリンクがコピーされた瞬間を検知し、fixupx.com などに自動で書き換えます。画面の内容を収集・送信することはありません。</string>
+
+    <string name="title_status">状態</string>
+    <string name="title_settings">設定</string>
+    <string name="title_log">ログ</string>
+
+    <string name="status_service_on">アクセシビリティ: 有効</string>
+    <string name="status_service_off">アクセシビリティ: 無効（必須）</string>
+    <string name="status_overlay_on">オーバーレイ権限: 許可済み</string>
+    <string name="status_overlay_off">オーバーレイ権限: 未許可（推奨）</string>
+    <string name="status_battery_on">電池の最適化: 除外済み</string>
+    <string name="status_battery_off">電池の最適化: 対象（除外を推奨）</string>
+
+    <string name="btn_accessibility">アクセシビリティ設定を開く</string>
+    <string name="btn_overlay">オーバーレイ権限を開く</string>
+    <string name="btn_battery">電池の最適化から除外する</string>
+    <string name="btn_test">クリップボードを今すぐ書き換える（テスト）</string>
+    <string name="btn_clear_log">ログを消去</string>
+
+    <string name="pref_enabled">自動書き換えを有効にする</string>
+    <string name="pref_toast">書き換えたときにトーストを表示</string>
+    <string name="pref_aggressive">検知を強める（上手く反応しないとき用）</string>
+    <string name="pref_target">置き換え先ドメイン</string>
+
+    <string name="toast_rewritten">→ %1$s に書き換えました</string>
+    <string name="toast_nothing">X / Twitter のツイート URL が見つかりませんでした</string>
+    <string name="toast_copied">書き換えてコピーしました</string>
+</resources>

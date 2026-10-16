@@ -1,0 +1,18 @@
+# .NET
+windows/bin/
+windows/obj/
+out/
+
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.iml
+*.jks
+*.keystore
+
+# OS
+.DS_Store
+Thumbs.db
